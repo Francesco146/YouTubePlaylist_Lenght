@@ -1,0 +1,7 @@
+oms module
+==========
+
+.. automodule:: oms
+   :members:
+   :undoc-members:
+   :show-inheritance:
