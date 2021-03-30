@@ -1,0 +1,15 @@
+version: '3'
+services:
+  web:
+    environment:
+    - YOUR_YOUTUBE_V3_API_KEY=<YOURAPIKEY(YoutubeV3)>
+    build: .
+    ports:
+      - "9999:9999"
+    volumes:
+      - .:/code
+    container_name: flaskWebApp
+
+  redis:
+    image: "redis:alpine"
+    container_name: redisCacheSystem
