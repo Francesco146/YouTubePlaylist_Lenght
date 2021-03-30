@@ -1,8 +1,0 @@
-YouTubeAPI_PL - testing
-=======================
-
-.. toctree::
-   :maxdepth: 4
-
-   main
-   oms
