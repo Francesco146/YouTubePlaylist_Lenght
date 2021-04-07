@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>PlayList Analysis</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css')}}">
+</head>
+
+<body>
+    <div class="login-box">
+        <h2>PlayList Analysis</h2>
+        <form method="post" action="loading" id="invia">
+            <div class="user-box">
+                <input type="text" name="input" required="">
+                <label>URL della PlayList / Video nella PlayList</label>
+            </div>
+            <a class="noselect" style="text-align:center;display:block;"
+                onclick="document.getElementById('invia').submit();">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Analizza
+            </a>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>main module &mdash; YouTubeAPI-PL 1.0.0 documentation</title>
+  <title>main module &mdash; YouTubePL-Length_API_WebAPP 1.5.0 documentation</title>
   
 
   
@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="oms module" href="oms.html" />
-    <link rel="prev" title="YouTubeAPI_PL - testing" href="modules.html" /> 
+    <link rel="prev" title="Python su WebApp - Flask" href="modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -53,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> YouTubeAPI-PL
+            <a href="index.html" class="icon icon-home"> YouTubePL-Length_API_WebAPP
           
 
           
@@ -86,9 +86,10 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">YouTubeAPI_PL - testing</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Python su WebApp - Flask</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">main module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="oms.html">oms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queryAPI.html">queryAPI module</a></li>
 </ul>
 </li>
 </ul>
@@ -106,7 +107,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">YouTubeAPI-PL</a>
+          <a href="index.html">YouTubePL-Length_API_WebAPP</a>
         
       </nav>
 
@@ -139,7 +140,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="modules.html">YouTubeAPI_PL - testing</a> &raquo;</li>
+          <li><a href="modules.html">Python su WebApp - Flask</a> &raquo;</li>
         
       <li>main module</li>
     
@@ -233,6 +234,20 @@
 </dd></dl>
 
 <dl class="py function">
+<dt id="main.error">
+<code class="sig-prename descclassname"><span class="pre">main.</span></code><code class="sig-name descname"><span class="pre">error</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error page of the WebApp</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – None</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(html) render the error.html page</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="main.favicon">
 <code class="sig-prename descclassname"><span class="pre">main.</span></code><code class="sig-name descname"><span class="pre">favicon</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.favicon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Page Icon</p>
@@ -247,15 +262,43 @@
 </dd></dl>
 
 <dl class="py function">
+<dt id="main.home">
+<code class="sig-prename descclassname"><span class="pre">main.</span></code><code class="sig-name descname"><span class="pre">home</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.home" title="Permalink to this definition">¶</a></dt>
+<dd><p>Home Page of the Web App</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – None</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(html) At the route / return the Html <cite>index.html</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="main.index">
 <code class="sig-prename descclassname"><span class="pre">main.</span></code><code class="sig-name descname"><span class="pre">index</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main Page of the Flask WebServer</p>
+<dd><p>API Documentation Page of the Flask WebServer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>None</strong> – None</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>(html) Html from the README.md markdown file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.loading">
+<code class="sig-prename descclassname"><span class="pre">main.</span></code><code class="sig-name descname"><span class="pre">loading</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.loading" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loading page, not a physical html page, just a buffering point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – None</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(String) PlayList ID from the form on index.html OR (html) error.html</p>
 </dd>
 </dl>
 </dd></dl>
@@ -275,14 +318,28 @@
 </dd></dl>
 
 <dl class="py function">
+<dt id="main.query">
+<code class="sig-prename descclassname"><span class="pre">main.</span></code><code class="sig-name descname"><span class="pre">query</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">playlistURL</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the youtube api and display the results</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>playlistURL</strong> (<em>String</em>) – PlayList ID</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(html) query.html rendered with the result the queryAPI gave me</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="main.write_json">
 <code class="sig-prename descclassname"><span class="pre">main.</span></code><code class="sig-name descname"><span class="pre">write_json</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idUser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passwdUser</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.write_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write in users.json the new idUser and the passwdUser</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>idUser</strong> – Username</p></li>
-<li><p><strong>passwdUser</strong> – Password</p></li>
+<li><p><strong>idUser</strong> (<em>String</em>) – Username</p></li>
+<li><p><strong>passwdUser</strong> (<em>String</em>) – Password</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -300,14 +357,14 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="oms.html" class="btn btn-neutral float-right" title="oms module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="modules.html" class="btn btn-neutral float-left" title="YouTubeAPI_PL - testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="Python su WebApp - Flask" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2021, Marastoni Francesco.
+        &#169; Copyright 2021, Francesco Marastoni.
 
     </p>
   </div>

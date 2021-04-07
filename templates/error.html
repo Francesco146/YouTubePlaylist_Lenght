@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>Errore</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css')}}">
+</head>
+
+<body>
+    <div class="login-box">
+        <h2>Errore!</h2>
+        <form>
+            <div>
+                <p style="color: white; font-size:20px;">Errore, il link che hai inserito non è corretto.</p>
+            </div>
+            <a class="noselect" href="/" style="text-align:center;display:block;">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Torna alla Home
+            </a>
+        </form>
+    </div>
+</body>
+
+</html>

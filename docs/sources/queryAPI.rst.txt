@@ -1,0 +1,7 @@
+queryAPI module
+===============
+
+.. automodule:: queryAPI
+   :members:
+   :undoc-members:
+   :show-inheritance:

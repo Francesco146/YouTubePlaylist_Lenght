@@ -1,9 +1,9 @@
 # coding: utf-8
 # importing all the modules that i need
-from oms import oreMinutiSecondi
+
 from googleapiclient.discovery import build
 from googleapiclient import discovery
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, redirect, url_for, render_template, request, session
 from flask_restful import Resource, Api, reqparse
 from redis import Redis
 from datetime import timedelta
@@ -12,6 +12,10 @@ import time
 import json
 import re
 import os
+import sys
+sys.dont_write_bytecode = True # not create a __pycache__ folder
+from oms import oreMinutiSecondi
+from queryAPI import queryAPI
 
 
 print("Getting the API Key from docker-compose.yml...")
@@ -19,8 +23,7 @@ print("Getting the API Key from docker-compose.yml...")
 youtube_api_key = os.getenv("YOUR_YOUTUBE_V3_API_KEY")
 print("\033[92mAPI Key taken. ✓\033[0m")
 print("Loading JSON YouTube API File...")
-path_json = 'rest.json'
-with open(path_json) as f:
+with open('rest.json') as f:
     # loading this .json file is used because googleapiclient has some problem withe the api key, so this json is a sort of auto configuration taken from the internet
     service = json.load(f, )
 print("\033[92mJSON YouTube API File Loaded. ✓\033[0m")
@@ -35,21 +38,83 @@ print("\033[92mConnected to Redis Database, Cache System has started. ✓\033[0m
 
 # add a decorator to the flask app, in position /, only on method GET
 @flask_app.route("/", methods=["GET"])
-def index():  # defining what to do if get a GET on route /
-    """Main Page of the Flask WebServer
+def home():
+    """Home Page of the Web App
+
+    :param None: None
+
+    :return: (html) At the route / return the Html `index.html`
+    """
+    return render_template("index.html")  # return index.html
+
+# add a decorator to the flask app, in position /api-documentation, only on method GET
+
+
+@flask_app.route("/loading", methods=["GET", "POST"])
+def loading():
+    """Loading page, not a physical html page, just a buffering point
+
+    :param None: None
+
+    :return: (String) PlayList ID from the form on index.html OR (html) error.html
+    """
+    try:  # split the string taken from `input` in the form in index.html, try getting the playlist ID
+        URL = request.form["input"].split('list=')[1].lstrip().split('&')[0]
+    except:
+        # if it fails call the error route of the WebApp
+        return redirect(url_for("error"))
+    # otherwise give the playlist id to the query route
+    return redirect(url_for("query", playlistURL=URL))
+
+# add a decorator to the flask app, in position /api-documentation, only on method GET
+
+
+@flask_app.route("/error", methods=["GET"])
+def error():
+    """Error page of the WebApp
+
+    :param None: None
+
+    :return: (html) render the error.html page
+    """
+    return render_template("error.html")
+
+# add a decorator to the flask app, in position /api-documentation, only on method GET
+
+
+@flask_app.route("/query/<playlistURL>", methods=["GET", "POST"])
+def query(playlistURL):
+    """Query the youtube api and display the results
+
+    :param playlistURL: PlayList ID
+
+    :type playlistURL: String
+
+    :return: (html) query.html rendered with the result the queryAPI gave me
+    """
+    responseWebApp = queryAPI(service, youtube_api_key, cache,
+                              playlistURL)  # call the function that analyze the data and store them in the cache system
+    # return the page
+    return render_template("query.html", tempoIMP_output=responseWebApp["tempoIMP"], durata_output=responseWebApp["durata"], counter_output=str(responseWebApp["counter"]))
+
+
+# add a decorator to the flask app, in position /api-documentation, only on method GET
+@flask_app.route("/api-documentation", methods=["GET"])
+def index():  # defining what to do if get a GET on route /api-documentation
+    """API Documentation Page of the Flask WebServer
 
     :param None: None
 
     :return: (html) Html from the README.md markdown file
     """
-    with open('index.md', 'r') as index:
+    with open('apiDocs.md', 'r') as index:
         # return a markdown -> html as index page
         return markdown.markdown(index.read())
 
 
 # add a decorator to the flask app, in position /addUser, only on method GET
 @flask_app.route("/addUser", methods=["GET"])
-def addUser():  # defining what to do if get a GET on route /
+def addUser():  # defining what to do if get a GET on route /addUser
     """Page for explaining how to add user
 
     :param None: None
@@ -79,6 +144,9 @@ def write_json(idUser, passwdUser):
 
     :param idUser: Username
     :param passwdUser: Password
+
+    :type idUser: String
+    :type passwdUser: String
 
     :return: (bool) True if user is added, False if user is already there
     """
@@ -180,117 +248,8 @@ class QueryAPI(Resource):  # main class of the api, constructor of the api
                     '&')[0]  # try getting the playlist ID from the possible link, structured as https://www.youtube.com/playlist?list=`playlist id`&index=1
             except Exception:  # is not a valid link, sending an error
                 return {'message': 'errore id non corretto'}, 500
-
-        youtube = discovery.build_from_document(
-            service, developerKey=youtube_api_key)  # initializing the api from the loaded json and my api key (from google developer console)
-
-        pattern_Hours = re.compile(r'(\d+)H')
-        pattern_Minutes = re.compile(r'(\d+)M')
-        # regex pattern to get the duration of the video, from the response of my second query
-        pattern_Seconds = re.compile(r'(\d+)S')
-
-        total_seconds = 0
-        nextPageToken = None  # this is used because youtube in his response give at most 50 results at time, and you need to get the others results by using this token
-        video_counter = 0
-        start_time = time.time()  # start the timer
-
-        while True:  # while theres video in the playlist
-            playlist_request = youtube.playlistItems().list(part='contentDetails',
-                                                            playlistId=playlist_ID,
-                                                            pageToken=nextPageToken)  # preparing the first query, get the first 50 video from the playlist given playlist ID and page token
-            try:
-                playlist_response = playlist_request.execute()  # execute the previous query
-            except Exception:  # if it returns an error, is because the google console developer is down, the playlist id is invalid, the api key is invalid or because your api has reached the max query per day
-                # so return an error to sender
-                return {'message': 'errore id non corretto o chiave api non corretta'}, 500
-
-            video_IDS_Temp = []  # creating / clearing this array to store all of video IDs
-            # creating / clearing this array to store all the video duration in seconds
-            videos_duration = []
-
-            # analyze the response returned from youtube
-            for item in playlist_response['items']:
-                # take the video ids and put them all in array video_IDS_Temp
-                video_IDS_Temp.append(item['contentDetails']['videoId'])
-
-            # creating / clearing this array to store all of video IDs that are not in redis cache system
-            video_IDS_Final = []
-
-            for j in range(len(video_IDS_Temp)):  # i check all the video ids one by one
-                # if the video id is not in the redis database (so the get method return none)
-                if cache.get(video_IDS_Temp[j]) == None:
-                    # put the video id in the final array, in needs to be analyzed and get stored in the cache
-                    video_IDS_Final.append(video_IDS_Temp[j])
-                else:  # otherwise, the video is already in the redis database
-                    # get the value from redis, so the duration in second of that video, increase the final total_seconds variable with the result
-                    total_seconds += int(cache.get(video_IDS_Temp[j]))
-                    video_counter += 1  # increase the video counter of the playlist by one
-
-            video_request = youtube.videos().list(part="contentDetails",
-                                                  id=','.join(video_IDS_Final))
-            # get all the details (so also the duration) from the final array of video's ids that are not in the cache
-            video_response = video_request.execute()
-
-            for item in video_response['items']:  # analyze the response i get
-
-                # take the duration of the video, the output will be something like this: 23M1S this means 23 minutes and 1 second
-                duration = item['contentDetails']['duration']
-
-                # get the hours, minutes and seconds from the video duration,using regex pattern created previously
-                hours = pattern_Hours.search(duration)
-                minutes = pattern_Minutes.search(duration)
-                seconds = pattern_Seconds.search(duration)
-
-                # take the int value from regex output, for example: for eliminate the H in 23H. i do the if statement because is possible that regex returns a None, if there is no match, so if hour is None i set them to 0
-                hours = int(hours.group(1)) if hours else 0
-                minutes = int(minutes.group(1)) if minutes else 0
-                seconds = int(seconds.group(1)) if seconds else 0
-
-                video_seconds = timedelta(hours=hours,
-                                          minutes=minutes,
-                                          seconds=seconds).total_seconds()  # take all the hours, minutes and seconds and calculate the total seconds
-
-                # put the video duration - 1 (because YouTube in his thumbnails put 1 seconds more than the actual video duration) in the array of videos duration
-                videos_duration.append(int(video_seconds) - 1)
-                video_counter += 1  # increase the video counter
-                # update the total seconds of the videos duration
-                total_seconds += video_seconds - 1
-
-            # take the next page token, used for getting the other video details
-            nextPageToken = playlist_response.get('nextPageToken')
-
-            for i in range(len(videos_duration)):  # check the array
-                # set the video id and its duration in the cache, with an expiration time of 60 seconds
-                cache.set(video_IDS_Final[i], videos_duration[i], ex=60)
-
-            if not nextPageToken:  # no more videos, stop the loop
-                break
-
-        total_seconds = int(total_seconds)
-        # get the hours, minutes and seconds from the total seconds
-        minutes, seconds = divmod(total_seconds, 60)
-        hours, minutes = divmod(minutes, 60)
-
-        # stop the timer and get hours, minutes and seconds elapsed
-        time_elapsed = int(round(time.time() - start_time, 0))
-        minutes_elapsed, seconds_elapsed = divmod(time_elapsed, 60)
-        hours_elapsed, minutes_elapsed = divmod(minutes_elapsed, 60)
-
-        time_spent = oreMinutiSecondi(
-            hours_elapsed, minutes_elapsed, seconds_elapsed, 0)  # get a grammatically correct string, given hours, minutes and seconds
-        playlist_duration = oreMinutiSecondi(hours, minutes, seconds, 1)
-
-        response = {
-            'message': 'Success',
-            'tempoIMP': time_spent,
-            'durata': playlist_duration,
-            'counter': video_counter
-        }  # constructing the response
-
-        video_IDS_Temp.clear()  # clear all the arrays
-        video_IDS_Final.clear()
-        videos_duration.clear()
-
+        # call the actual function that analyze the data, store them in the cache and returns the response
+        response = queryAPI(service, youtube_api_key, cache, playlist_ID)
         return response, 200  # send the response
 
 
@@ -305,10 +264,11 @@ def main():
     flask_api = Api(flask_app)  # creating the api from flask app
     print("\033[92mAPI from Flask APP created. ✓\033[0m")
     print("Adding Main class to API...")
-    # add the main class as a resource to the api, in route /
-    flask_api.add_resource(QueryAPI, '/')
-    flask_api.add_resource(addUser, '/addUser')
-    print("\033[92mAdded Main class to API. ✓\033[0m")
+    # add the main class as a resource to the api, in route /api-entrypoint
+    flask_api.add_resource(QueryAPI, '/api-entrypoint')
+    flask_api.add_resource(addUser, '/api-entrypoint/addUser')
+    print(
+        "\033[92mAdded Main class to API (/api-entrypoint) (/api-entrypoint/addUser). ✓\033[0m")
     print("\033[92mRunning Flask APP Server in: localhost:9999. ✓\033[0m")
     # finally run the app on localhost:9999
     flask_app.run(host="0.0.0.0", port=9999)

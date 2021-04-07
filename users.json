@@ -1,4 +1,8 @@
 {
     "users": [
+        {
+            "id": "temp",
+            "passwd": "t3mp"
+        }
     ]
 }

@@ -1,7 +1,11 @@
 
+import sys
+sys.dont_write_bytecode = True  # not create a __pycache__ folder
+
+
 def oreMinutiSecondi(h, m, s, id):
     """Analyze hours, minutes and seconds, choosing which sentence is grammatically correct
-    
+
     :param h: hours
     :param m: minutes
     :param s: seconds
@@ -10,7 +14,7 @@ def oreMinutiSecondi(h, m, s, id):
     :type m: int
     :type s: int
     :type id: int
-    
+
     :return: Returns a grammatically correct string to display hours minutes and seconds, if h, m, s are < 0 return None
     """
     output = ""
