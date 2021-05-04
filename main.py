@@ -273,12 +273,16 @@ class QueryAPI(Resource):  # main class of the api, constructor of the api
         request_args = request_parser.parse_args()
         user = request_args.get('user')
         key = request_args.get('key')
+        auth = False
         for i in range(len(passwords)):
             if user in passwords[i]["id"] and key in passwords[i]["passwd"]:
+                auth = True
                 break
-            else:
-                logging.warning("Not Authenticated User")
-                return {'message': 'errore user o key non validi'}, 403
+        if auth == True:
+            pass
+        else:
+            logging.warning("Not Authenticated User")
+            return {'message': 'errore user o key non validi'}, 403
         # if the value of `id` is a Playlist ID, get it and pass
         if request_args.get('id').startswith("PL"):
             playlist_ID = request_args.get('id')

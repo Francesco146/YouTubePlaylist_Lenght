@@ -5,7 +5,7 @@
 
 **Definition**
 
-- `Accepted Messages on localhost:9999 (POST)`
+- `Accepted Messages on localhost:9999/api-entrypoint/ (POST)`
 
 &nbsp;&nbsp;&nbsp;&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": "PLAYLIST LINK / PLAYLIST ID",<br />
@@ -16,7 +16,7 @@
 
 **Definition**
 
-`POST /`
+`POST /api-entrypoint`
 
 **Response**
 

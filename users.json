@@ -3,6 +3,10 @@
         {
             "id": "temp",
             "passwd": "t3mp"
+        },
+        {
+            "id": "tempo",
+            "passwd": "t3mpo"
         }
     ]
 }

@@ -2,7 +2,7 @@
 # PlayList Length Service
 
 ## Adding a User
-- `Accepted Messages on localhost:9999/addUser (POST)`
+- `Accepted Messages on localhost:9999/api-entrypoint/addUser (POST)`
 
 &nbsp;&nbsp;&nbsp;&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"username": "user name",<br />
@@ -11,7 +11,7 @@
 
 **Definition**
 
-`POST /`
+`POST /api-entrypoint/addUser`
 
 **Response**
 
