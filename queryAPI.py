@@ -10,9 +10,18 @@ import json
 import re
 import os
 import sys
+import logging
 sys.dont_write_bytecode = True  # not create a __pycache__ folder
 from oms import oreMinutiSecondi
 
+
+logging.basicConfig(level=logging.INFO, 
+                    filename="./logs/apilog.log", 
+                    encoding="utf-8", 
+                    filemode="a",
+                    format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S'
+) # a logger that keep tracks of everything
 
 def queryAPI(service, youtube_api_key, cache, playlist_ID):
     """Core of this program, this function analyze the playlist and save the results of the operation in the Cache System
@@ -49,6 +58,7 @@ def queryAPI(service, youtube_api_key, cache, playlist_ID):
             playlist_response = playlist_request.execute()  # execute the previous query
         except Exception:  # if it returns an error, is because the google console developer is down, the playlist id is invalid, the api key is invalid or because your api has reached the max query per day
             # so return an error to sender
+            logging.warning("Invalid Request API")
             return {'message': 'errore id non corretto o chiave api non corretta'}, 500
 
         video_IDS_Temp = []  # creating / clearing this array to store all of video IDs
@@ -70,7 +80,7 @@ def queryAPI(service, youtube_api_key, cache, playlist_ID):
                 video_IDS_Final.append(video_IDS_Temp[j])
             else:  # otherwise, the video is already in the redis database
                 # get the value from redis, so the duration in second of that video, increase the final total_seconds variable with the result
-                total_seconds += int(cache.get(video_IDS_Temp[j]))
+                total_seconds += int(cache.get(name=video_IDS_Temp[j]))
                 video_counter += 1  # increase the video counter of the playlist by one
 
         video_request = youtube.videos().list(part="contentDetails",
@@ -108,7 +118,7 @@ def queryAPI(service, youtube_api_key, cache, playlist_ID):
 
         for i in range(len(videos_duration)):  # check the array
             # set the video id and its duration in the cache, with an expiration time of 60 seconds
-            cache.set(video_IDS_Final[i], videos_duration[i], ex=60)
+            cache.set(name=video_IDS_Final[i], value=videos_duration[i], ex=60)
 
         if not nextPageToken:  # no more videos, stop the loop
             break
@@ -123,9 +133,16 @@ def queryAPI(service, youtube_api_key, cache, playlist_ID):
     minutes_elapsed, seconds_elapsed = divmod(time_elapsed, 60)
     hours_elapsed, minutes_elapsed = divmod(minutes_elapsed, 60)
 
-    time_spent = oreMinutiSecondi(
-        hours_elapsed, minutes_elapsed, seconds_elapsed, 0)  # get a grammatically correct string, given hours, minutes and seconds
-    playlist_duration = oreMinutiSecondi(hours, minutes, seconds, 1)
+    time_spent = oreMinutiSecondi(h=hours_elapsed, 
+                                  m=minutes_elapsed,
+                                  s=seconds_elapsed,
+                                  id=0
+    )  # get a grammatically correct string, given hours, minutes and seconds
+    playlist_duration = oreMinutiSecondi(h=hours,
+                                         m=minutes,
+                                         s=seconds,
+                                         id=1
+    )
 
     response = {
         'message': 'Success',
