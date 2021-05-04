@@ -2,7 +2,7 @@ version: '3'
 services:
   web:
     environment:
-    - YOUR_YOUTUBE_V3_API_KEY=AIzaSyCQppu8GRb5THfchYB7snbGzDtvZ8UZ52E
+    - YOUR_YOUTUBE_V3_API_KEY=<YOUR_YOUTUBE_V3_API_KEY>
     build: .
     ports:
       - "9999:9999"
