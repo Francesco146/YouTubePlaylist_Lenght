@@ -4,5 +4,6 @@ This API is dockerized, implements a cache system for same videos in different p
 
 ## Quick Start
 - start docker
+- modify in the docker-compose.yml the value of `YOUR_YOUTUBE_V3_API_KEY` and set it to your YouTube Api v3 KEY. 
 - run `docker-compose -p youtubeapi_pl up` command and open the `localhost:9999` in the browser. There should be the main web page. If you open the `localhost:9999/addUser` instead, there will be an explanation of how to add users for using the API. Using `PostMan` send POST request as shown below and see the response.
 - to see the cache system just run `docker exec -it redisCacheSystem redis-cli`, the API saves the video ID (like `dQw4w9WgXcQ` and its duration in seconds) for exactly 1 minute. To see this run the command: `get dQw4w9WgXcQ`
